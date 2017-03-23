@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: xiaolusys
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "xiaolusys"
+  template:
+    metadata:
+      labels:
+        app: xiaolusys
+    spec:
+      nodeSelector:
+        node: "true"
+      imagePullSecrets:
+        - name: aliyunrepo
+      containers:
+        - name: jenkins
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          env:
+            - name: INSTANCE
+              value: mall
+            - name: TARGET
+              value: k8s
+          ports:
+            - containerPort: 9000
+              name: http
+          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi"]
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
