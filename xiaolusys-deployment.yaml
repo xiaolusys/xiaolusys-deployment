@@ -19,18 +19,23 @@ spec:
       imagePullSecrets:
         - name: aliyunrepo
       containers:
-        - name: jenkins
+        - name: gunicorn
           image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
           env:
             - name: INSTANCE
               value: mall
             - name: TARGET
-              value: k8s
+              value: TARGET_NAME
             - name: REDIS_AUTH
               valueFrom:
                 secretKeyRef:
                   name: xiaolusys
                   key: REDIS_AUTH
+            - name: MYSQL_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: MYSQL_AUTH
           ports:
             - containerPort: 9000
               name: http
@@ -39,3 +44,10 @@ spec:
             requests:
               cpu: "200m"
               memory: "512Mi"
+          volumeMounts:
+          - name: certs
+            mountPath: /data/certs
+      volumes:
+        - name: certs
+          secret:
+            secretName: certs

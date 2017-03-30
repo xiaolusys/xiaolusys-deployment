@@ -1,36 +1,61 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: xiaolusys
+  name: xiaolusys-celery
 spec:
   replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: "xiaolusys"
+      app: "xiaolusys-celery"
   template:
     metadata:
       labels:
-        app: xiaolusys
+        app: xiaolusys-celery
     spec:
       nodeSelector:
         node: "true"
       imagePullSecrets:
         - name: aliyunrepo
+      initContainers:
+        - name: fonts
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys-fonts:latest"
+          command: ["sh", "-c", "cp /fonts/* /data/"]
+          volumeMounts:
+          - name: fonts
+            mountPath: /data
       containers:
-        - name: jenkins
+        - name: celery
           image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
           env:
-            - name: INSTANCE
-              value: mall
+            - name: C_FORCE_ROOT
+              value: "1"
             - name: TARGET
-              value: k8s
-          ports:
-            - containerPort: 9000
-              name: http
-          command: ["celery", "worker", "-A", "shopmanager", "-c", "6"]
+              value: k8s-production
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: REDIS_AUTH
+            - name: MYSQL_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: MYSQL_AUTH
+          command: ["celery", "worker", "-A", "shopmanager", "-c", "4", "--loglevel=ERROR", "--time-limit=5400"]
           resources:
             requests:
               cpu: "200m"
               memory: "512Mi"
+          volumeMounts:
+          - name: fonts
+            mountPath: /data/fonts
+          - name: certs
+            mountPath: /data/certs
+      volumes:
+        - name: fonts
+          emptyDir: {}
+        - name: certs
+          secret:
+            secretName: certs
