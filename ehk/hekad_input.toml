@@ -1,0 +1,70 @@
+[hekad]
+maxprocs = 4
+
+# Heka dashboard for internal metrics and time series graphs
+#[Dashboard]
+#type = "DashboardOutput"
+#address = ":4352"
+#ticker_interval = 1
+
+[CounterFilter]
+ticker_interval = 1
+message_matcher = 'Type != "heka.counter-output"'
+
+[StatAccumInput]
+ticker_interval = 1
+
+[PayloadEncoder]
+
+[LogOutput]
+message_matcher = 'Type == "heka.counter-output"'
+encoder = "PayloadEncoder"
+
+[ESJsonEncoder]
+es_index_from_timestamp = true
+type_name = "%{Type}"
+
+[ElasticSearchOutput]
+#server = "http://%ENV[ELASTICSEARCH_PORT_9200_TCP_ADDR]:%ENV[ELASTICSEARCH_PORT_9200_TCP_PORT]"
+server = "http://10.24.234.205:9200"
+message_matcher = 'TRUE'
+encoder = "ESJsonEncoder"
+flush_interval = 50
+
+[nginx_log_decoder]
+type = "SandboxDecoder"
+script_type = "lua"
+filename = "lua_decoders/nginx_access.lua"
+
+[nginx_log_decoder.config]
+type = "nginx"
+user_agent_transform = true
+log_format = '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
+
+#[DockerLogInput]
+#decoder = "nginx_log_decoder"
+#fields_from_env = [ "MESOS_TASK_ID" ]
+
+#[nginx_access_logs]
+#type = "LogstreamerInput"
+#decoder = "nginx_log_decoder"
+#log_directory = "/data/log"
+#file_match = '(?P<DomainName>[^/]+)\.log'
+#differentiator = ["nginx.", "DomainName", ".access"]
+
+[JsonDecoder]
+type = "SandboxDecoder"
+filename = "lua_decoders/json.lua"
+
+    [JsonDecoder.config]
+    type = "django"
+    payload_keep = true
+    map_fields = true
+    Severity = "severity"
+
+[django_access_logs]
+type = "LogstreamerInput"
+decoder = "JsonDecoder"
+log_directory = "/data/log/django"
+file_match = '(?P<ServiceName>[^/]+)\.log'
+differentiator = ["service.", "ServiceName"]

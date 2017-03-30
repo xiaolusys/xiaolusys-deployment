@@ -26,15 +26,10 @@ spec:
               value: mall
             - name: TARGET
               value: k8s
-            - name: REDIS_AUTH
-              valueFrom:
-                secretKeyRef:
-                  name: xiaolusys
-                  key: REDIS_AUTH
           ports:
             - containerPort: 9000
               name: http
-          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi"]
+          command: ["celery", "worker", "-A", "shopmanager", "-c", "6"]
           resources:
             requests:
               cpu: "200m"
