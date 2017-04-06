@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: xiaolusys-celerybeat
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "xiaolusys-celerybeat"
+  template:
+    metadata:
+      labels:
+        app: xiaolusys-celerybeat
+    spec:
+      nodeSelector:
+        node: "true"
+      imagePullSecrets:
+        - name: aliyunrepo
+      initContainers:
+        - name: fonts
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys-fonts:latest"
+          command: ["sh", "-c", "cp /fonts/* /data/"]
+          volumeMounts:
+          - name: fonts
+            mountPath: /data
+      containers:
+        - name: celerybeat
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          imagePullPolicy: Always
+          env:
+            - name: C_FORCE_ROOT
+              value: "1"
+            - name: TARGET
+              value: k8s-production
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: REDIS_AUTH
+            - name: MYSQL_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: MYSQL_AUTH
+          command: ["celery", "beat", "-A", "shopmanager", "--loglevel=INFO", "-S", "django"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+          volumeMounts:
+          - name: fonts
+            mountPath: /data/fonts
+          - name: certs
+            mountPath: /data/certs
+      volumes:
+        - name: fonts
+          emptyDir: {}
+        - name: certs
+          secret:
+            secretName: certs
