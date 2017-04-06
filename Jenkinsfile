@@ -17,6 +17,11 @@ node {
     sh("kubectl apply -f celerybeat-deployment.yaml -n ${env.BRANCH_NAME}")
   }
 
+  if (env.BRANCH_NAME == "flower") {
+    sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' flower-deployment.yaml")
+    sh("kubectl apply -f flower-deployment.yaml -n ${env.BRANCH_NAME}")
+  }
+
   if (env.BRANCH_NAME == "hekad") {
     sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' celery-deployment.yaml")
     sh("kubectl apply -f celery-deployment.yaml -n ${env.BRANCH_NAME}")

@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: xiaolusys-flower
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: "xiaolusys-flower"
+  template:
+    metadata:
+      labels:
+        app: xiaolusys-flower
+    spec:
+      nodeSelector:
+        node: "true"
+      imagePullSecrets:
+        - name: aliyunrepo
+      containers:
+        - name: celery-flower
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          imagePullPolicy: Always
+          env:
+            - name: C_FORCE_ROOT
+              value: "1"
+            - name: TARGET
+              value: k8s-production
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: REDIS_AUTH
+            - name: MYSQL_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: MYSQL_AUTH
+          command: ["flower", "-A", "shopmanager", "--log_file_max_size=1073741824", "--conf=shopmanager/task_settings.py"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "300Mi"
+          volumeMounts:
+          - name: certs
+            mountPath: /data/certs
+      volumes:
+        - name: certs
+          secret:
+            secretName: certs
