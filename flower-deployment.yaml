@@ -24,6 +24,8 @@ spec:
           env:
             - name: C_FORCE_ROOT
               value: "1"
+	    - name: FLOWER_BASIC_AUTH
+              value: "xiaolu:2016xiaoluyear"
             - name: TARGET
               value: k8s-production
             - name: REDIS_AUTH
