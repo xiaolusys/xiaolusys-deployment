@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: xiaolusys-celery
 spec:
-  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -28,6 +27,7 @@ spec:
       containers:
         - name: celery
           image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          imagePullPolicy: Always
           env:
             - name: C_FORCE_ROOT
               value: "1"

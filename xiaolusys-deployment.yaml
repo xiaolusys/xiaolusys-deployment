@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: xiaolusys
 spec:
-  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -21,6 +20,7 @@ spec:
       containers:
         - name: gunicorn
           image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          imagePullPolicy: Always
           env:
             - name: INSTANCE
               value: mall
