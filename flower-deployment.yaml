@@ -43,10 +43,3 @@ spec:
             requests:
               cpu: "100m"
               memory: "300Mi"
-          volumeMounts:
-          - name: certs
-            mountPath: /data/certs
-      volumes:
-        - name: certs
-          secret:
-            secretName: certs
