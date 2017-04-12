@@ -51,6 +51,9 @@ spec:
             requests:
               cpu: "100m"
               memory: "250Mi"
+	    limits:
+              cpu: "100m"
+              memory: "250Mi"
           volumeMounts:
           - name: fonts
             mountPath: /data/fonts

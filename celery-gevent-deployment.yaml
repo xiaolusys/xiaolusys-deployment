@@ -45,9 +45,12 @@ spec:
                   key: MYSQL_AUTH
           command: ["celery", "worker", "-A", "shopmanager", "-P", "gevent" , "-c", "200", "--loglevel=INFO", "--time-limit=1800","-Q","xiaolupay,logistics,qrcode,weixin"]
           resources:
-            requests:
+            limits:
               cpu: "200m"
-              memory: "512Mi"
+              memory: "256Mi"
+            requests:
+              cpu: "800m"
+              memory: "1024Mi"
           volumeMounts:
           - name: fonts
             mountPath: /data/fonts

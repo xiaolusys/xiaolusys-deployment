@@ -46,8 +46,11 @@ spec:
           command: ["celery", "worker", "-A", "shopmanager", "-c", "4", "--loglevel=INFO", "--time-limit=3600", "-Q", "default,celery,notify,peroid,frency,async,apis,mama,activevalue,mamafortune,relationship,carryrecord,skustats,coupon,integral,statistics,dinghuo,carrytotal,xiaolupay"]
           resources:
             requests:
-              cpu: "200m"
-              memory: "512Mi"
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 200m
+              memory: 640Mi
           volumeMounts:
           - name: fonts
             mountPath: /data/fonts

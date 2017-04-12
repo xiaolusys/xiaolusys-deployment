@@ -40,6 +40,9 @@ spec:
                   key: MYSQL_AUTH
           command: ["flower", "-A", "shopmanager", "--log_file_max_size=1073741824", "--conf=shopmanager/task_settings.py"]
           resources:
+            limits:
+              cpu: "100m"
+              memory: "512Mi"
             requests:
               cpu: "100m"
               memory: "300Mi"

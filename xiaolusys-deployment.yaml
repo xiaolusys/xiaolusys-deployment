@@ -42,6 +42,9 @@ spec:
           command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi"]
           resources:
             requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
               cpu: "200m"
               memory: "512Mi"
           volumeMounts:
