@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: xiaolusys-flower
+  namespace: flower
+spec:
+  ports:
+  - name: xiaolusys-flower
+    port: 5555
+    protocol: TCP
+    targetPort: 5555
+  selector:
+    run: xiaolusys-flower
+  type: NodePort

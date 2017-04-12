@@ -15,6 +15,9 @@ node {
 
     sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' celery-deployment.yaml")
     sh("kubectl apply -f celery-deployment.yaml -n ${env.BRANCH_NAME}")
+
+    sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' celery-gevent-deployment.yaml")
+    sh("kubectl apply -f celery-gevent-deployment.yaml -n ${env.BRANCH_NAME}")
     
     sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' celerybeat-deployment.yaml")
     sh("kubectl apply -f celerybeat-deployment.yaml -n ${env.BRANCH_NAME}")

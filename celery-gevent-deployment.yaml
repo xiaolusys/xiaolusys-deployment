@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: xiaolusys-celery
+  name: xiaolusys-celery-gevent
 spec:
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: "xiaolusys-celery"
+      app: "xiaolusys-celery-gevent"
   template:
     metadata:
       labels:
-        app: xiaolusys-celery
+        app: xiaolusys-celery-gevent
     spec:
       nodeSelector:
         node: "true"
@@ -43,7 +43,7 @@ spec:
                 secretKeyRef:
                   name: xiaolusys
                   key: MYSQL_AUTH
-          command: ["celery", "worker", "-A", "shopmanager", "-c", "4", "--loglevel=INFO", "--time-limit=3600", "-Q", "default,celery,notify,peroid,frency,async,apis,mama,activevalue,mamafortune,relationship,carryrecord,skustats,coupon,integral,statistics,dinghuo,carrytotal,xiaolupay"]
+          command: ["celery", "worker", "-A", "shopmanager", "-P", "gevent" , "-c", "200", "--loglevel=INFO", "--time-limit=1800","-Q","xiaolupay,logistics,qrcode,weixin"]
           resources:
             requests:
               cpu: "200m"
