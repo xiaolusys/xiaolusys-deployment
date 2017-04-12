@@ -43,7 +43,7 @@ spec:
                 secretKeyRef:
                   name: xiaolusys
                   key: MYSQL_AUTH
-          command: ["celery", "worker", "-A", "shopmanager", "-c", "3", "--loglevel=INFO", "--time-limit=3600", "-Q", "default,celery,notify,peroid,frency,async,apis,mama,activevalue,mamafortune,relationship,carryrecord,skustats,coupon,integral,statistics,dinghuo,carrytotal,xiaolupay"]
+          command: ["celery", "worker", "-A", "shopmanager",  "-P", "gevent" , "-c", "200", "--loglevel=INFO", "--time-limit=3600", "-Q", "default,celery,notify,peroid,frency,async,apis,mama,activevalue,mamafortune,relationship,carryrecord,skustats,coupon,integral,statistics,dinghuo,carrytotal,xiaolupay"]
           resources:
             requests:
               cpu: 200m
