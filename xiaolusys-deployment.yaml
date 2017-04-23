@@ -39,7 +39,7 @@ spec:
           ports:
             - containerPort: 9000
               name: http
-          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi"]
+          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi", "--error-logfile=/dev/stdout"]
           resources:
             requests:
               cpu: "200m"
