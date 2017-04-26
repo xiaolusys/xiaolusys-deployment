@@ -44,9 +44,6 @@ spec:
             requests:
               cpu: "200m"
               memory: "512Mi"
-            limits:
-              cpu: "1500m"
-              memory: "1024Mi"
           volumeMounts:
           - name: certs
             mountPath: /data/certs
