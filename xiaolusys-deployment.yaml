@@ -7,11 +7,13 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: "xiaolusys"
+      app: xiaolusys
+      runner: gevent
   template:
     metadata:
       labels:
         app: xiaolusys
+        runner: gevent
     spec:
       nodeSelector:
         node: "true"
@@ -39,29 +41,31 @@ spec:
           ports:
             - containerPort: 9000
               name: http
-          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi", "--error-logfile=/dev/stdout"]
+          command: ["python", "pyserver.py"]
           resources:
             requests:
               cpu: "200m"
               memory: "512Mi"
+            limits:
+              memory: "768Mi"
           volumeMounts:
           - name: certs
             mountPath: /data/certs
           livenessProbe:
             httpGet:
-              path: /
+              path: /MP_verify_1.txt
               port: 9000
               scheme: HTTP
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
             successThreshold: 1
           readinessProbe:
             httpGet:
-              path: /
+              path: /MP_verify_1.txt
               port: 9000
               scheme: HTTP
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
       volumes:
         - name: certs
           secret:
