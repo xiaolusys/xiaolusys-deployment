@@ -47,6 +47,18 @@ spec:
           volumeMounts:
           - name: certs
             mountPath: /data/certs
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
         - name: certs
           secret:
