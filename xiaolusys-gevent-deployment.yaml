@@ -8,12 +8,12 @@ spec:
   selector:
     matchLabels:
       app: xiaolusys
-      runner: gunicorn
+      runner: gevent
   template:
     metadata:
       labels:
         app: xiaolusys
-        runner: gunicorn
+        runner: gevent
     spec:
       nodeSelector:
         node: "true"
@@ -41,13 +41,13 @@ spec:
           ports:
             - containerPort: 9000
               name: http
-          command: ["gunicorn", "-k", "gevent", "-w", "3", "-c", "gunicorn_config.py", "shopmanager.wsgi", "--error-logfile=/dev/stdout"]
+          command: ["python", "pyserver.py"]
           resources:
             requests:
               cpu: "200m"
               memory: "512Mi"
             limits:
-              memory: "1024Mi"
+              memory: "768Mi"
           volumeMounts:
           - name: certs
             mountPath: /data/certs
