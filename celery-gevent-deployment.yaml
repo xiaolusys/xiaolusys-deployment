@@ -46,7 +46,7 @@ spec:
           command: ["celery", "worker", "-A", "shopmanager", "-P", "gevent" , "-c", "200", "--loglevel=INFO", "--time-limit=1800","-Q","xiaolupay,logistics,qrcode,weixin,notify,peroid"]
           resources:
             requests:
-              cpu: "200m"
+              cpu: "100m"
               memory: "256Mi"
             limits:
               cpu: "800m"
