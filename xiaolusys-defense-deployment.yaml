@@ -1,0 +1,72 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: xiaolusys-defense
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: xiaolusys-defense
+      runner: gunicorn
+  template:
+    metadata:
+      labels:
+        app: xiaolusys-defense
+        runner: gunicorn
+    spec:
+      nodeSelector:
+        node: "true"
+      imagePullSecrets:
+        - name: aliyunrepo
+      containers:
+        - name: gunicorn
+          image: "registry.aliyuncs.com/xiaolu-img/xiaolusys:COMMIT_ID"
+          imagePullPolicy: Always
+          env:
+            - name: INSTANCE
+              value: mall
+            - name: TARGET
+              value: TARGET_NAME 
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: REDIS_AUTH
+            - name: MYSQL_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: xiaolusys
+                  key: MYSQL_AUTH
+          ports:
+            - containerPort: 9000
+              name: http
+          command: ["gunicorn", "-k", "gevent", "-w", "1", "-c", "gunicorn_config.py", "shopmanager.wsgi", "--error-logfile=/dev/stdout"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+            limits:
+              memory: "1024Mi"
+          volumeMounts:
+          - name: certs
+            mountPath: /data/certs
+          livenessProbe:
+            httpGet:
+              path: /MP_verify_1.txt
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /MP_verify_1.txt
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: certs
+          secret:
+            secretName: certs

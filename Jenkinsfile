@@ -13,6 +13,9 @@ node {
   if (env.BRANCH_NAME == "production") {
     sh("kubectl apply -f xiaolusys-deployment.yaml -n ${env.BRANCH_NAME}")
 
+    sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' xiaolusys-defense-deployment.yaml")
+    sh("kubectl apply -f xiaolusys-defense-deployment.yaml -n ${env.BRANCH_NAME}")
+
     sh("sed -ie 's/COMMIT_ID/${params.commit_id}/g' celery-deployment.yaml")
     sh("kubectl apply -f celery-deployment.yaml -n ${env.BRANCH_NAME}")
 
